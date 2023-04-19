@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import issuesSlice from './issues/issuesSlice';
+import repoSlice from './repo/repoSlice';
 
 const store = configureStore({
 	reducer: {
-		kanbanBoard: issuesSlice,
+		issues: issuesSlice,
+		repo: repoSlice,
 	},
 	devTools: process.env.NODE_ENV === 'development',
 });

@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const githubToken = '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';
+const githubToken = process.env.REACT_APP_GITHUB_KEY;
 
-type TIssue = {
+interface Issue {
 	id: number;
 	number: number;
 	assignee: {};
@@ -15,31 +15,49 @@ type TIssue = {
 	created_at: string;
 	comments: number;
 	status?: string;
-};
+}
+
+interface StatusObject {
+	id: number;
+	status: string;
+	items: Issue[];
+}
 
 interface KanbanState {
-	issues: TIssue[];
-	toDoIssues: TIssue[];
-	inProgressIssues: TIssue[];
-	doneIssues: TIssue[];
+	items: Issue[];
+	boards: StatusObject[];
 	loading: boolean;
 	error: null;
 }
 
 const initialState: KanbanState = {
-	issues: [],
-	toDoIssues: [],
-	inProgressIssues: [],
-	doneIssues: [],
+	items: [],
+	boards: [
+		{
+			id: 1,
+			status: 'ToDo',
+			items: [],
+		},
+		{
+			id: 2,
+			status: 'In Progress',
+			items: [],
+		},
+		{
+			id: 3,
+			status: 'Done',
+			items: [],
+		},
+	],
 	loading: false,
 	error: null,
 };
 
 export const getIssues = createAsyncThunk(
 	'issues/getIssues',
-	async (repoName: string, { rejectWithValue }) => {
+	async (repoName: string | undefined, { rejectWithValue }) => {
 		try {
-			const response = await axios.get<TIssue[]>(
+			const response = await axios.get<Issue[]>(
 				`https://api.github.com/repos/${repoName}/issues?state=all&per_page=100`,
 				{
 					headers: {
@@ -60,8 +78,33 @@ const issuesSlice = createSlice({
 	name: 'kanbanBoard',
 	initialState,
 	reducers: {
-		setIssues: state => {
-			console.log('setIssues');
+		updateIssues: (
+			state,
+			action: PayloadAction<{
+				sourceBoardId: number;
+				destinationBoardId: number;
+				sourceIndex: number;
+				destinationIndex: number;
+			}>
+		) => {
+			const {
+				sourceBoardId,
+				destinationBoardId,
+				sourceIndex,
+				destinationIndex,
+			} = action.payload;
+
+			const sourceBoard = state.boards.find(
+				board => board.id === sourceBoardId
+			);
+			const destinationBoard = state.boards.find(
+				board => board.id === destinationBoardId
+			);
+
+			if (sourceBoard && destinationBoard) {
+				const [item] = sourceBoard.items.splice(sourceIndex, 1);
+				destinationBoard.items.splice(destinationIndex, 0, item);
+			}
 		},
 	},
 	extraReducers: builder => {
@@ -70,8 +113,8 @@ const issuesSlice = createSlice({
 		});
 		builder.addCase(
 			getIssues.fulfilled,
-			(state, action: PayloadAction<TIssue[]>) => {
-				const issues = action.payload.map((issue: TIssue) => ({
+			(state, action: PayloadAction<Issue[]>) => {
+				const issues = action.payload.map((issue: Issue) => ({
 					...issue,
 					status:
 						issue.state === 'closed'
@@ -80,24 +123,27 @@ const issuesSlice = createSlice({
 							? 'In Progress'
 							: 'ToDo',
 				}));
-				state.issues = [...issues];
-				state.toDoIssues = state.issues.filter(
+				state.items = [...issues];
+
+				state.boards[0].items = state.items.filter(
 					issue => issue.status === 'ToDo'
 				);
-				state.inProgressIssues = state.issues.filter(
+				state.boards[1].items = state.items.filter(
 					issue => issue.status === 'In Progress'
 				);
-				state.doneIssues = state.issues.filter(
+				state.boards[2].items = state.items.filter(
 					issue => issue.status === 'Done'
 				);
+
 				state.loading = false;
 			}
 		);
 		builder.addCase(getIssues.rejected, (state, action: PayloadAction<any>) => {
 			state.error = action.payload;
+			state.loading = false;
 		});
 	},
 });
 
-export const { setIssues } = issuesSlice.actions;
+export const { updateIssues } = issuesSlice.actions;
 export default issuesSlice.reducer;
