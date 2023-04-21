@@ -104,6 +104,8 @@ const issuesSlice = createSlice({
 			if (sourceBoard && destinationBoard) {
 				const [item] = sourceBoard.items.splice(sourceIndex, 1);
 				destinationBoard.items.splice(destinationIndex, 0, item);
+
+				item.status = destinationBoard.status;
 			}
 		},
 	},
@@ -125,14 +127,11 @@ const issuesSlice = createSlice({
 				}));
 				state.items = [...issues];
 
-				state.boards[0].items = state.items.filter(
-					issue => issue.status === 'ToDo'
-				);
-				state.boards[1].items = state.items.filter(
-					issue => issue.status === 'In Progress'
-				);
-				state.boards[2].items = state.items.filter(
-					issue => issue.status === 'Done'
+				state.boards.map(
+					board =>
+						(board.items = state.items.filter(
+							issue => issue.status === board.status
+						))
 				);
 
 				state.loading = false;
