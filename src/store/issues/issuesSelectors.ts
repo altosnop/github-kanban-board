@@ -1,5 +1,15 @@
+import { createSelector } from 'reselect';
 import { RootState } from '../configureStore';
 
-export const issuesSelector = (state: RootState) => state.issues.items;
+export const getRepoState = (state: RootState) => state.issues.repos;
 export const issuesLoadingSelector = (state: RootState) => state.issues.loading;
-export const boardsSelector = (state: RootState) => state.issues.boards;
+
+export const getRepoBoards = createSelector(
+	[getRepoState, (_: RootState, repoName: string) => repoName],
+	(repos, repoName) => repos[repoName]?.boards || []
+);
+
+export const getRepoIssues = createSelector(
+	[getRepoState, (_: RootState, repoName: string) => repoName],
+	(repos, repoName) => repos[repoName]?.issues || []
+);

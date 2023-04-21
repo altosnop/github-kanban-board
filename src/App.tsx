@@ -1,40 +1,38 @@
-import { useEffect, useState } from 'react';
-import { useAppDispatch } from './hooks/useAppDispatch';
+import { useState } from 'react';
 import { useAppSelector } from './hooks/useAppSelector';
-import { issuesSelector } from './store/issues/issuesSelectors';
-import { setRepo } from './store/repo/repoSlice';
+import { repoSelector } from './store/repo/repoSelectors';
+import { Typography } from 'antd';
 import getValueFromUrl from './service/getValueFromUrl';
 import SearchBar from './components/SearchBar';
 import RepoInfo from './components/RepoInfo';
 import Boards from './components/Boards';
 import './App.css';
 
-function App() {
-	const dispatch = useAppDispatch();
-	const [url, setUrl] = useState('');
+const { Title } = Typography;
 
-	const todoIssues = useAppSelector(issuesSelector);
+function App() {
+	const repo = useAppSelector(repoSelector);
+
+	const [repoName, setRepoName] = useState('');
 
 	const handleInputChange = (value: string) => {
-		setUrl(value);
-	};
-
-	useEffect(() => {
-		const repoName = getValueFromUrl(url);
-
-		if (todoIssues.length > 0) {
-			dispatch(setRepo(repoName));
+		const name = getValueFromUrl(value);
+		if (name) {
+			setRepoName(name);
 		}
-	}, [dispatch, todoIssues.length, url]);
+	};
 
 	return (
 		<>
-			<SearchBar value={url} onChange={handleInputChange} />
+			<SearchBar value={repoName} onChange={handleInputChange} />
 
-			{todoIssues.length > 0 && <RepoInfo />}
+			{repo.name.length > 0 && <RepoInfo />}
 
-			{/* {todoIssues.length > 0 && <Boards />} */}
-			<Boards />
+			{repo.name.length > 0 ? (
+				<Boards />
+			) : (
+				<Title style={{ textAlign: 'center' }}>Enter repo URL</Title>
+			)}
 		</>
 	);
 }

@@ -1,19 +1,20 @@
-import React from 'react';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import {
-	boardsSelector,
-	issuesLoadingSelector,
-} from '../../store/issues/issuesSelectors';
+import { getRepoBoards } from '../../store/issues/issuesSelectors';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Col, Row, Card, Space, Typography, Spin } from 'antd';
+import { Col, Row, Card, Space, Typography } from 'antd';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { RootState } from '../../store/configureStore';
 import { updateIssues } from '../../store/issues/issuesSlice';
+import { currentRepoNameSelector } from '../../store/repo/repoSelectors';
 const { Title } = Typography;
 
 const Boards = () => {
 	const dispatch = useAppDispatch();
-	const boards = useAppSelector(boardsSelector);
-	const loading = useAppSelector(issuesLoadingSelector);
+
+	const currentRepoName = useAppSelector(currentRepoNameSelector);
+	const boards = useAppSelector((state: RootState) =>
+		getRepoBoards(state, currentRepoName)
+	);
 
 	const onDragEnd = (result: any) => {
 		const { source, destination } = result;
@@ -35,6 +36,7 @@ const Boards = () => {
 				destinationBoardId: Number(destination.droppableId),
 				sourceIndex: source.index,
 				destinationIndex: destination.index,
+				repoName: currentRepoName,
 			})
 		);
 	};
@@ -66,19 +68,6 @@ const Boards = () => {
 											borderRadius: '4px',
 										}}
 									>
-										{loading && (
-											<div
-												style={{
-													margin: '20px 0',
-													marginBottom: '20px',
-													padding: '30px 50px',
-													textAlign: 'center',
-													borderRadius: '4px',
-												}}
-											>
-												<Spin />
-											</div>
-										)}
 										{board.items.map((issue, index) => (
 											<div
 												style={{ width: '90%', margin: '0 auto' }}

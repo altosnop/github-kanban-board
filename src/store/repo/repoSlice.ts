@@ -15,6 +15,7 @@ type TRepo = {
 
 interface KanbanState {
 	item: TRepo;
+	currentRepoName: string;
 	loading: boolean;
 	error: null;
 }
@@ -29,6 +30,7 @@ const initialState: KanbanState = {
 		},
 		stargazers_count: 0,
 	},
+	currentRepoName: '',
 	loading: false,
 	error: null,
 };
@@ -53,10 +55,14 @@ export const setRepo = createAsyncThunk(
 	}
 );
 
-const issuesSlice = createSlice({
-	name: 'kanbanBoard',
+const repoSlice = createSlice({
+	name: 'repo',
 	initialState,
-	reducers: {},
+	reducers: {
+		setCurrentRepoName: (state, action: PayloadAction<string>) => {
+			state.currentRepoName = action.payload;
+		},
+	},
 	extraReducers: builder => {
 		builder.addCase(setRepo.pending, (state, _) => {
 			state.loading = true;
@@ -75,4 +81,6 @@ const issuesSlice = createSlice({
 	},
 });
 
-export default issuesSlice.reducer;
+export const { setCurrentRepoName } = repoSlice.actions;
+
+export default repoSlice.reducer;
