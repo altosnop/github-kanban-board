@@ -1,33 +1,15 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import Issue from '../../types/Issue';
+import Board from '../../types/Board';
 import axios from 'axios';
 
 const githubToken = process.env.REACT_APP_GITHUB_KEY;
-
-interface Issue {
-	id: number;
-	number: number;
-	assignee: {};
-	user: {
-		login: string;
-	};
-	state: string;
-	title: string;
-	created_at: string;
-	comments: number;
-	status?: string;
-}
-
-interface StatusObject {
-	id: number;
-	status: string;
-	items: Issue[];
-}
 
 interface KanbanState {
 	loading: boolean;
 	repos: {
 		[repoName: string]: {
-			boards: StatusObject[];
+			boards: Board[];
 			issues: Issue[];
 			previousIssues: Issue[];
 		};
@@ -100,7 +82,7 @@ export const getIssues = createAsyncThunk(
 			}));
 
 			let issues: Issue[] = [];
-			let boards: StatusObject[] = [];
+			let boards: Board[] = [];
 
 			if (isNewRepo) {
 				issues = newIssues;

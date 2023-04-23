@@ -1,26 +1,17 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import Repo from '../../types/Repo';
 
 const githubToken = process.env.REACT_APP_GITHUB_KEY;
 
-type TRepo = {
-	name: string;
-	html_url: string;
-	owner: {
-		login: string;
-		html_url: string;
-	};
-	stargazers_count: number;
-};
-
-interface KanbanState {
-	item: TRepo;
+interface RepoState {
+	item: Repo;
 	currentRepoName: string;
 	loading: boolean;
 	error: null;
 }
 
-const initialState: KanbanState = {
+const initialState: RepoState = {
 	item: {
 		name: '',
 		html_url: '',
@@ -39,7 +30,7 @@ export const setRepo = createAsyncThunk(
 	'repo/setRepo',
 	async (repoName: string | undefined, { rejectWithValue }) => {
 		try {
-			const response = await axios.get<TRepo>(
+			const response = await axios.get<Repo>(
 				`https://api.github.com/repos/${repoName}`,
 				{
 					headers: {
@@ -67,13 +58,10 @@ const repoSlice = createSlice({
 		builder.addCase(setRepo.pending, (state, _) => {
 			state.loading = true;
 		});
-		builder.addCase(
-			setRepo.fulfilled,
-			(state, action: PayloadAction<TRepo>) => {
-				state.item = action.payload;
-				state.loading = false;
-			}
-		);
+		builder.addCase(setRepo.fulfilled, (state, action: PayloadAction<Repo>) => {
+			state.item = action.payload;
+			state.loading = false;
+		});
 		builder.addCase(setRepo.rejected, (state, action: PayloadAction<any>) => {
 			state.error = action.payload;
 			state.loading = false;

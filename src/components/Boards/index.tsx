@@ -1,11 +1,13 @@
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { getRepoBoards } from '../../store/issues/issuesSelectors';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Col, Row, Card, Space, Typography } from 'antd';
+import { Col, Row, Space, Typography } from 'antd';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { RootState } from '../../store/configureStore';
 import { updateIssues } from '../../store/issues/issuesSlice';
 import { currentRepoNameSelector } from '../../store/repo/repoSelectors';
+import IssueCard from '../IssueCard';
+import './styles.css';
 const { Title } = Typography;
 
 const Boards = () => {
@@ -59,14 +61,7 @@ const Boards = () => {
 									<Space
 										direction='vertical'
 										size='middle'
-										style={{
-											display: 'flex',
-											backgroundColor: '#f0ede9',
-											border: '1px solid #e3dfda',
-											padding: '3% 0',
-											height: '100%',
-											borderRadius: '4px',
-										}}
+										className='card-space'
 									>
 										{board.items.map((issue, index) => (
 											<div
@@ -78,21 +73,7 @@ const Boards = () => {
 													index={index}
 												>
 													{provided => (
-														<Card
-															key={issue.id}
-															title={issue.title}
-															hoverable
-															bordered={false}
-															size='small'
-															ref={provided.innerRef}
-															{...provided.dragHandleProps}
-															{...provided.draggableProps}
-														>
-															#{issue.number} opened{' '}
-															{new Date(issue.created_at).toLocaleString()}{' '}
-															<br />
-															{issue.user.login} | Comments: {issue.comments}
-														</Card>
+														<IssueCard issue={issue} provided={provided} />
 													)}
 												</Draggable>
 											</div>
