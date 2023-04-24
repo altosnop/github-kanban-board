@@ -3,5 +3,6 @@
 		"baseUrl": "./",
 		"esModuleInterop": true,
 		"jsx": "react-jsx"
-	}
+	},
+	"allowJs": true
 }
