@@ -7,7 +7,6 @@ import { RootState } from '../../store/configureStore';
 import { updateIssues } from '../../store/issues/issuesSlice';
 import { currentRepoNameSelector } from '../../store/repo/repoSelectors';
 import IssueCard from '../IssueCard';
-import './styles.css';
 const { Title } = Typography;
 
 const Boards = () => {
@@ -61,7 +60,14 @@ const Boards = () => {
 									<Space
 										direction='vertical'
 										size='middle'
-										className='card-space'
+										style={{
+											display: 'flex',
+											backgroundColor: '#f0ede9',
+											border: '1px solid #e3dfda',
+											padding: '3% 0',
+											height: '100%',
+											borderRadius: '4px',
+										}}
 									>
 										{board.items.map((issue, index) => (
 											<div

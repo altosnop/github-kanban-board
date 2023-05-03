@@ -20,16 +20,20 @@ const RepoInfo = () => {
 					<Link
 						href={repo?.owner.html_url}
 						target='_blank'
-						className='repo-text'
+						style={{ fontSize: '17px' }}
 					>
 						{repo?.owner.login}
 					</Link>
-					<Text className='repo-text'>{'>'}</Text>
-					<Link href={repo?.html_url} target='_blank' className='repo-text'>
+					<Text style={{ fontSize: '17px' }}>{'>'}</Text>
+					<Link
+						href={repo?.html_url}
+						target='_blank'
+						style={{ fontSize: '17px' }}
+					>
 						{repo?.name}
 					</Link>
-					<Text className='repo-text'>
-						<StarFilled style={{ color: 'orange' }} className='repo-text' />
+					<Text style={{ fontSize: '17px' }}>
+						<StarFilled style={{ color: 'orange', fontSize: '17px' }} />
 						{Math.round(repo.stargazers_count / 1000) + 'k'}
 					</Text>
 				</>

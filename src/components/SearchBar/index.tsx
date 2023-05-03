@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { getIssues } from './../../store/issues/issuesSlice';
 import { useAppDispatch } from './../../hooks/useAppDispatch';
 import { Input } from 'antd';
@@ -18,18 +18,26 @@ const SearchBar = ({ value, onChange }: SearchBarProps) => {
 
 	const currentRepoName = useAppSelector(currentRepoNameSelector);
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInputValue(e.target.value);
-		onChange(e.target.value);
-	};
+	const memoizedCurrentRepoName = useMemo(
+		() => currentRepoName,
+		[currentRepoName]
+	);
 
-	const onSearch = () => {
-		if (value && value !== currentRepoName) {
+	const handleInputChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			setInputValue(e.target.value);
+			onChange(e.target.value);
+		},
+		[onChange]
+	);
+
+	const onSearch = useCallback(() => {
+		if (value && value !== memoizedCurrentRepoName) {
 			dispatch(getIssues(value));
 			dispatch(setCurrentRepoName(value));
 		}
 		dispatch(setRepo(value));
-	};
+	}, [value, memoizedCurrentRepoName, dispatch]);
 
 	return (
 		<Search

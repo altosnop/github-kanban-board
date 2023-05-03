@@ -1,8 +1,10 @@
 module.exports = {
-	preset: 'ts-jest',
-	testEnvironment: 'node',
+	testEnvironment: 'jsdom',
 	transform: {
-		'^.+\\.ts?$': 'ts-jest',
+		'^.+\\.tsx?$': 'ts-jest',
 	},
-	transformIgnorePatterns: ['<rootDir>/node_modules/'],
+	moduleNameMapper: {
+		'^@/(.*)$': '<rootDir>/src/$1',
+	},
+	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

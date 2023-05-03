@@ -2,12 +2,27 @@ import { render, screen } from '@testing-library/react';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import RepoInfo from '.';
 
+import '@testing-library/jest-dom/extend-expect';
+
 jest.mock('../../hooks/useAppSelector', () => ({
 	useAppSelector: jest.fn(),
 }));
 
 describe('RepoInfo', () => {
-	it('should render repository information', () => {
+	test('renders without throwing an error', () => {
+		(useAppSelector as jest.Mock).mockReturnValueOnce({
+			name: 'test-repo',
+			owner: {
+				login: 'test-user',
+				html_url: 'https://github.com/test-user',
+			},
+			html_url: 'https://github.com/test-user/test-repo',
+			stargazers_count: 1000,
+		});
+
+		render(<RepoInfo />);
+	});
+	test('should render repository information', () => {
 		(useAppSelector as jest.Mock).mockReturnValueOnce({
 			name: 'test-repo',
 			owner: {

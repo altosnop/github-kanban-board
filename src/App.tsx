@@ -6,7 +6,6 @@ import getValueFromUrl from './service/getValueFromUrl';
 import SearchBar from './components/SearchBar';
 import RepoInfo from './components/RepoInfo';
 import Boards from './components/Boards';
-import './App.css';
 
 const { Title } = Typography;
 

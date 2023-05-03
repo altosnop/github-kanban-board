@@ -23,7 +23,7 @@ const persistConfig = {
 	whitelist: ['issues'],
 };
 
-const persistedReducer = persistReducer(persistConfig, reducers);
+export const persistedReducer = persistReducer(persistConfig, reducers);
 
 const store = configureStore({
 	reducer: persistedReducer,
